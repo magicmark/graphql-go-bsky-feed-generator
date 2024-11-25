@@ -53,5 +53,5 @@ func CreateTables(db *sql.DB) {
 }
 
 func GetConnection() (*sql.DB, error) {
-    return sql.Open("sqlite3", getFileLocation())
+    return sql.Open("sqlite3", getFileLocation() + "?_time_format=sqlite")
 }

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"log"
 )
 
 const CURSOR_EOF = "eof"
@@ -52,13 +53,13 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 		query = `
 			SELECT * FROM post
 			ORDER BY indexed_at DESC
-			LIMIT :3
+			LIMIT :limit
 		`
 	} else {
 		query = `
 			SELECT * FROM post
-			WHERE (indexed_at = :1 AND cid < :2) OR (indexed_at < :1)
-			LIMIT :3
+			WHERE (indexed_at = :indexed_at AND cid < :cid) OR (indexed_at < :indexed_at)
+			LIMIT :limit
 		`
 		var err error
 		cursor, err = parseCursor(cursorString)
@@ -67,7 +68,12 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 		}
 	}
 
-	rows, err := db.Query(query, cursor.IndexedAt, cursor.CID, limit)
+	rows, err := db.Query(
+		query,
+		sql.Named("indexed_at", cursor.IndexedAt),
+		sql.Named("cid", cursor.CID),
+		sql.Named("limit", limit),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("db query error: %w", err)
 	}
@@ -76,8 +82,15 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 	newCursor := CURSOR_EOF
 	feed := make([]FeedItem, 0, limit)
 	var post Post
+
 	for rows.Next() {
-		if err := rows.Scan(&post); err != nil {
+		if err := rows.Scan(
+			&post.URI,
+			&post.CID,
+			&post.ReplyParent,
+			&post.ReplyRoot,
+			&post.IndexedAt,
+		); err != nil {
 			return nil, fmt.Errorf("row scan error: %w", err)
 		}
 

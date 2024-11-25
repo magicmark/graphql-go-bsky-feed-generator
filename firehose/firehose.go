@@ -28,6 +28,7 @@ func createHandler(db *sql.DB, repoMessage *RepoMessage) {
 			post.ReplyRoot = sql.NullString{String: record.Reply.Root.URI, Valid: true}
 		}
 
+		log.Println("Found post! Inserting: %s", record.Text)
 		database.InsertPost(db, post)
 	}
 }
