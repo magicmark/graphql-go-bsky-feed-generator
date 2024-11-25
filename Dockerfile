@@ -7,7 +7,7 @@ RUN go mod download
 
 COPY / /app
 
-RUN CGO_ENABLED=1 GOOS=linux go build app/server.go -o /bsky-feed-server
+RUN CGO_ENABLED=1 GOOS=linux go build -o /bsky-feed-server
 
 EXPOSE 8081
 
