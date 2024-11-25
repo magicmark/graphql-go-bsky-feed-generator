@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"log"
 )
 
 const CURSOR_EOF = "eof"
