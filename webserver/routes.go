@@ -60,7 +60,7 @@ func ServeHTTP(db *sql.DB) {
 		}
 
 		cursor := r.URL.Query().Get("cursor")
-		limit := r.URL.Query().Get("feed")
+		limit := r.URL.Query().Get("limit")
 		if limit == "" {
 			limit = "20"
 		}
