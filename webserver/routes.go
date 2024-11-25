@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go-bsky-feed/config"
-	"go-bsky-feed/database"
+	"go-bsky-feed/algorithm"
 	"log"
 	"strconv"
 )
@@ -71,7 +71,7 @@ func ServeHTTP(db *sql.DB) {
 			return
 		}
 
-		feedResults, err := database.GetFeedResults(db, cursor, limitInt)
+		feedResults, err := algorithm.GetFeedResults(db, cursor, limitInt)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "error fetching feed results", http.StatusInternalServerError)

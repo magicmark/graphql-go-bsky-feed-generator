@@ -1,4 +1,4 @@
-package database
+package algorithm
 
 import (
 	"database/sql"

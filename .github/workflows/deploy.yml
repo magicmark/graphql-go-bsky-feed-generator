@@ -1,0 +1,29 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install caprover
+        run: |
+          npm install -g caprover
+
+      - name: Deploy App to CapRover
+        run: |
+          caprover deploy \
+            --caproverUrl "${{ secrets.CAPROVER_SERVER }}" \
+            --appToken "${{ secrets.APP_TOKEN }}" \
+            --caproverApp "${{ secrets.APP_NAME }}" \
+            --branch main
