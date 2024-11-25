@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"go-bsky-feed/database"
 )
 
 const CURSOR_EOF = "eof"
@@ -80,7 +81,7 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 
 	newCursor := CURSOR_EOF
 	feed := make([]FeedItem, 0, limit)
-	var post Post
+	var post database.Post
 
 	for rows.Next() {
 		if err := rows.Scan(
