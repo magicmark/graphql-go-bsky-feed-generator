@@ -45,17 +45,29 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 		return &Results{Cursor: CURSOR_EOF, Feed: []FeedItem{}}, nil
 	}
 
-	cursor, err := parseCursor(cursorString)
-	if err != nil {
-		return nil, err
+	cursor := &Cursor{}
+	query := ""
+
+	if cursorString == "" {
+		query = `
+			SELECT * FROM post
+			ORDER BY indexed_at DESC
+			LIMIT :3
+		`
+	} else {
+		query = `
+			SELECT * FROM post
+			WHERE (indexed_at = :1 AND cid < :2) OR (indexed_at < :1)
+			LIMIT :3
+		`
+		var err error
+		cursor, err = parseCursor(cursorString)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	getPosts := `
-		SELECT * FROM post
-		WHERE (indexed_at = :1 AND cid < :2) OR (indexed_at < :1)
-	`
-
-	rows, err := db.Query(getPosts, cursor.IndexedAt, cursor.CID)
+	rows, err := db.Query(query, cursor.IndexedAt, cursor.CID, limit)
 	if err != nil {
 		return nil, err
 	}
