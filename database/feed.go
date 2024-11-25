@@ -11,7 +11,7 @@ import (
 const CURSOR_EOF = "eof"
 
 type FeedItem struct {
-	URI string `json:"uri"`
+	Post string `json:"post"`
 }
 
 type Results struct {
@@ -93,8 +93,8 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 			return nil, fmt.Errorf("row scan error: %w", err)
 		}
 
-		feed = append(feed, FeedItem{URI: post.URI})
-		newCursor = fmt.Sprintf("%d::%s", post.IndexedAt.UnixNano(), post.CID)
+		feed = append(feed, FeedItem{Post: post.URI})
+		newCursor = fmt.Sprintf("%d::%s", post.IndexedAt.UnixMilli(), post.CID)
 	}
 
 	if err := rows.Err(); err != nil {
