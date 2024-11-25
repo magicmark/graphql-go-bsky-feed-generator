@@ -33,7 +33,7 @@ func parseCursor(cursor string) (*Cursor, error) {
 	indexedAt, cid := cursorParts[0], cursorParts[1]
 	indexedAtUnixTime, err := strconv.ParseInt(indexedAt, 10, 64)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error parsing indexedAt int: %w", err)
 	}
 	indexedAtTime := time.Unix(indexedAtUnixTime/1000, 0)
 
@@ -63,13 +63,13 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 		var err error
 		cursor, err = parseCursor(cursorString)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Cursor parse error: %w", err)
 		}
 	}
 
 	rows, err := db.Query(query, cursor.IndexedAt, cursor.CID, limit)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("db query error: %w", err)
 	}
 	defer rows.Close()
 
@@ -78,7 +78,7 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 	var post Post
 	for rows.Next() {
 		if err := rows.Scan(&post); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("row scan error: %w", err)
 		}
 
 		feed = append(feed, FeedItem{URI: post.URI})
@@ -86,7 +86,7 @@ func GetFeedResults(db *sql.DB, cursorString string, limit int) (*Results, error
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error from rows.Err(): %w", err)
 	}
 
 	return &Results{Cursor: newCursor, Feed: feed}, nil
