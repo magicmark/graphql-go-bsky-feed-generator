@@ -22,7 +22,7 @@ var keywords = [...]string{
     "apollo summit",
     "relay client",
     "grafbase",
-    "hasura",
+    " hasura ",
     "appsync",
     "rover cli",
 }
